@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,10 +23,11 @@ const (
 	userAgent          = "go-wordpress"
 	headerTotalRecords = "X-WP-Total"
 	headerTotalPages   = "X-WP-TotalPages"
+	apiPathPrefix      = "/wp/v2"
 )
 
-// ErrURLContainsWPV2 is returned from NewClient if URL contains /wp/v2.
-var ErrURLContainsWPV2 = errors.New("url must not contain /wp/v2")
+// ErrURLContainsWPV2 is returned from NewClient if URL contains `apiPathPrefix`.
+var ErrURLContainsWPV2 = fmt.Errorf("url must not contain %s", apiPathPrefix)
 
 // DefaultHTTPTransport is an http.RoundTripper that has DisableKeepAlives set true.
 var DefaultHTTPTransport = &http.Transport{
@@ -64,6 +64,8 @@ type Client struct {
 
 	// WordPress timezone location
 	Location *time.Location
+
+	NonPrettyPermalinks bool
 
 	Categories *CategoriesService
 	Comments   *CommentsService
@@ -163,7 +165,7 @@ func (r *Response) populatePageValues() {
 
 // NewClient returns an initalized Client for the given baseURL and httpClient.
 func NewClient(baseURL string, httpClient *http.Client) (*Client, error) {
-	if strings.Contains(baseURL, "/wp/v2") {
+	if strings.Contains(baseURL, apiPathPrefix) {
 		return nil, ErrURLContainsWPV2
 	}
 
@@ -219,19 +221,34 @@ func addOptions(s string, opt interface{}) (string, error) {
 	return u.String(), nil
 }
 
+func (c *Client) getRequestURL(s string) (*url.URL, error) {
+	if !strings.HasSuffix(c.baseURL.Path, "/") {
+		return nil, fmt.Errorf("baseURL must have a trailing slash, but %q does not", c.baseURL)
+	}
+
+	var apiPath string
+	if c.NonPrettyPermalinks {
+		apiPath = "/?rest_route="
+	} else {
+		apiPath = "/wp-json"
+	}
+
+	if s == "" {
+		apiPath += "/"
+	} else {
+		apiPath = fmt.Sprintf("%s%s%s", apiPath, apiPathPrefix, "/"+s)
+	}
+
+	return c.baseURL.Parse(apiPath)
+}
+
 // NewRequest creates an API request. A relative URL can be provided in urlStr,
 // in which case it is resolved relative to the baseURL of the Client.
 // Relative URLs should always be specified without a preceding slash. If
 // specified, the value pointed to by body is JSON encoded and included as the
 // request body.
 func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
-	if !strings.HasSuffix(c.baseURL.Path, "/") {
-		return nil, fmt.Errorf("baseURL must have a trailing slash, but %q does not", c.baseURL)
-	}
-	if urlStr != "" {
-		urlStr = fmt.Sprintf("/wp-json/wp/v2/%s", urlStr)
-	}
-	u, err := c.baseURL.Parse(urlStr)
+	u, err := c.getRequestURL(urlStr)
 	if err != nil {
 		return nil, err
 	}
@@ -462,13 +479,7 @@ func (c *Client) PostData(ctx context.Context, urlStr string, content []byte, co
 		return nil, closeErr
 	}
 
-	if !strings.HasSuffix(c.baseURL.Path, "/") {
-		return nil, fmt.Errorf("baseURL must have a trailing slash, but %q does not", c.baseURL)
-	}
-	if urlStr != "" {
-		urlStr = fmt.Sprintf("/wp-json/wp/v2/%s", urlStr)
-	}
-	u, err := c.baseURL.Parse(urlStr)
+	u, err := c.getRequestURL(urlStr)
 	if err != nil {
 		return nil, err
 	}
