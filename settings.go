@@ -22,11 +22,11 @@ type Settings struct {
 }
 
 // SettingsService provides access to the settings related functions in the WordPress REST API.
-type SettingsService service
+type SettingsService Service
 
 // List returns a list of settingss.
 func (c *SettingsService) List(ctx context.Context) (*Settings, *Response, error) {
 	var settings Settings
-	resp, err := c.client.List(ctx, "settings", nil, &settings)
+	resp, err := c.Client.List(ctx, "settings", nil, &settings)
 	return &settings, resp, err
 }

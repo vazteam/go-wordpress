@@ -83,11 +83,11 @@ type Client struct {
 	client  *http.Client
 	baseURL *url.URL
 
-	common service // Reuse a single struct instead of allocating one for each service on the heap.
+	common Service // Reuse a single struct instead of allocating one for each service on the heap.
 }
 
-type service struct {
-	client *Client
+type Service struct {
+	Client *Client
 }
 
 // ListOptions specifies the optional parameters to various List methods that
@@ -179,7 +179,7 @@ func NewClient(baseURL string, httpClient *http.Client) (*Client, error) {
 	}
 
 	c := &Client{client: httpClient, UserAgent: userAgent, baseURL: url}
-	c.common.client = c
+	c.common.Client = c
 	c.Categories = (*CategoriesService)(&c.common)
 	c.Comments = (*CommentsService)(&c.common)
 	c.Media = (*MediaService)(&c.common)

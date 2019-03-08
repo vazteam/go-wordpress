@@ -68,7 +68,7 @@ type Media struct {
 }
 
 // MediaService provides access to the media related functions in the WordPress REST API.
-type MediaService service
+type MediaService Service
 
 // List returns a list of medias.
 func (c *MediaService) List(ctx context.Context, opts *MediaListOptions) ([]*Media, *Response, error) {
@@ -77,13 +77,13 @@ func (c *MediaService) List(ctx context.Context, opts *MediaListOptions) ([]*Med
 		return nil, nil, err
 	}
 
-	req, err := c.client.NewRequest("GET", u, nil)
+	req, err := c.Client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	media := []*Media{}
-	resp, err := c.client.Do(ctx, req, &media)
+	resp, err := c.Client.Do(ctx, req, &media)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -93,7 +93,7 @@ func (c *MediaService) List(ctx context.Context, opts *MediaListOptions) ([]*Med
 // Create creates a new media.
 func (c *MediaService) Create(ctx context.Context, options *MediaUploadOptions) (*Media, *Response, error) {
 	var created Media
-	resp, err := c.client.PostData(ctx, "media", options.Data, options.ContentType, options.Filename, &created)
+	resp, err := c.Client.PostData(ctx, "media", options.Data, options.ContentType, options.Filename, &created)
 	return &created, resp, err
 }
 
@@ -101,7 +101,7 @@ func (c *MediaService) Create(ctx context.Context, options *MediaUploadOptions) 
 func (c *MediaService) Get(ctx context.Context, id int, params interface{}) (*Media, *Response, error) {
 	var entity Media
 	entityURL := fmt.Sprintf("media/%v", id)
-	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	resp, err := c.Client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }
 
@@ -109,6 +109,6 @@ func (c *MediaService) Get(ctx context.Context, id int, params interface{}) (*Me
 func (c *MediaService) Delete(ctx context.Context, id int, params interface{}) (*Media, *Response, error) {
 	var deleted Media
 	entityURL := fmt.Sprintf("media/%v", id)
-	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
+	resp, err := c.Client.Delete(ctx, entityURL, params, &deleted)
 	return &deleted, resp, err
 }

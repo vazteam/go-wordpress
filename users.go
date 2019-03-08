@@ -36,13 +36,13 @@ type User struct {
 }
 
 // UsersService provides access to the Users related functions in the WordPress REST API.
-type UsersService service
+type UsersService Service
 
 // Me returns information about the currently authenticated user.
 func (c *UsersService) Me(ctx context.Context, params interface{}) (*User, *Response, error) {
 	url := fmt.Sprintf("%v/me", "users")
 	var user User
-	resp, err := c.client.Get(ctx, url, params, &user)
+	resp, err := c.Client.Get(ctx, url, params, &user)
 	return &user, resp, err
 }
 
@@ -53,13 +53,13 @@ func (c *UsersService) List(ctx context.Context, opts *UserListOptions) ([]*User
 		return nil, nil, err
 	}
 
-	req, err := c.client.NewRequest("GET", u, nil)
+	req, err := c.Client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	users := []*User{}
-	resp, err := c.client.Do(ctx, req, &users)
+	resp, err := c.Client.Do(ctx, req, &users)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -70,7 +70,7 @@ func (c *UsersService) List(ctx context.Context, opts *UserListOptions) ([]*User
 // Create creates a new user.
 func (c *UsersService) Create(ctx context.Context, newUser *User) (*User, *Response, error) {
 	var created User
-	resp, err := c.client.Create(ctx, "users", newUser, &created)
+	resp, err := c.Client.Create(ctx, "users", newUser, &created)
 	return &created, resp, err
 }
 
@@ -78,7 +78,7 @@ func (c *UsersService) Create(ctx context.Context, newUser *User) (*User, *Respo
 func (c *UsersService) Get(ctx context.Context, id int, params interface{}) (*User, *Response, error) {
 	var entity User
 	entityURL := fmt.Sprintf("users/%v", id)
-	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	resp, err := c.Client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }
 
@@ -86,7 +86,7 @@ func (c *UsersService) Get(ctx context.Context, id int, params interface{}) (*Us
 func (c *UsersService) Update(ctx context.Context, id int, user *User) (*User, *Response, error) {
 	var updated User
 	entityURL := fmt.Sprintf("users/%v", id)
-	resp, err := c.client.Update(ctx, entityURL, user, &updated)
+	resp, err := c.Client.Update(ctx, entityURL, user, &updated)
 	return &updated, resp, err
 }
 
@@ -94,6 +94,6 @@ func (c *UsersService) Update(ctx context.Context, id int, user *User) (*User, *
 func (c *UsersService) Delete(ctx context.Context, id int, params interface{}) (*User, *Response, error) {
 	var deleted User
 	entityURL := fmt.Sprintf("users/%v", id)
-	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
+	resp, err := c.Client.Delete(ctx, entityURL, params, &deleted)
 	return &deleted, resp, err
 }

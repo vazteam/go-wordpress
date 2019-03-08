@@ -18,20 +18,20 @@ type Term struct {
 }
 
 // TermsService provides access to the Terms related functions in the WordPress REST API.
-type TermsService service
+type TermsService Service
 
 // List returns a list of terms.
 func (c *TermsService) List(ctx context.Context, taxonomy string, params interface{}) ([]*Term, *Response, error) {
 	var terms []*Term
 	url := fmt.Sprintf("terms/%v", taxonomy)
-	resp, err := c.client.List(ctx, url, params, &terms)
+	resp, err := c.Client.List(ctx, url, params, &terms)
 	return terms, resp, err
 }
 
 // Tag returns the terms taxonomy service configured for tags.
 func (c *TermsService) Tag() *TermsTaxonomyService {
 	return &TermsTaxonomyService{
-		client:       c.client,
+		client:       c.Client,
 		url:          fmt.Sprintf("%v/tag", "terms"),
 		taxonomyBase: "tag",
 	}
@@ -40,7 +40,7 @@ func (c *TermsService) Tag() *TermsTaxonomyService {
 // Category returns the terms taxonomy service configured for categories.
 func (c *TermsService) Category() *TermsTaxonomyService {
 	return &TermsTaxonomyService{
-		client:       c.client,
+		client:       c.Client,
 		url:          fmt.Sprintf("%v/category", "terms"),
 		taxonomyBase: "category",
 	}

@@ -25,12 +25,12 @@ type Statuses struct {
 }
 
 // StatusesService provides access to the Status related functions in the WordPress REST API.
-type StatusesService service
+type StatusesService Service
 
 // List returns a list of statuses.
 func (c *StatusesService) List(ctx context.Context, params interface{}) (*Statuses, *Response, error) {
 	var statuses Statuses
-	resp, err := c.client.List(ctx, "statuses", params, &statuses)
+	resp, err := c.Client.List(ctx, "statuses", params, &statuses)
 	return &statuses, resp, err
 }
 
@@ -38,6 +38,6 @@ func (c *StatusesService) List(ctx context.Context, params interface{}) (*Status
 func (c *StatusesService) Get(ctx context.Context, slug string, params interface{}) (*Status, *Response, error) {
 	var entity Status
 	entityURL := fmt.Sprintf("statuses/%v", slug)
-	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	resp, err := c.Client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }

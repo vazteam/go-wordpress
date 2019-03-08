@@ -18,7 +18,7 @@ type Category struct {
 }
 
 // CategoriesService provides access to the category related functions in the WordPress REST API.
-type CategoriesService service
+type CategoriesService Service
 
 // List returns a list of categories.
 func (c *CategoriesService) List(ctx context.Context, opts *CategoryListOptions) ([]*Category, *Response, error) {
@@ -27,13 +27,13 @@ func (c *CategoriesService) List(ctx context.Context, opts *CategoryListOptions)
 		return nil, nil, err
 	}
 
-	req, err := c.client.NewRequest("GET", u, nil)
+	req, err := c.Client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	categories := []*Category{}
-	resp, err := c.client.Do(ctx, req, &categories)
+	resp, err := c.Client.Do(ctx, req, &categories)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -43,7 +43,7 @@ func (c *CategoriesService) List(ctx context.Context, opts *CategoryListOptions)
 // Create creates a new category.
 func (c *CategoriesService) Create(ctx context.Context, newCategory *Category) (*Category, *Response, error) {
 	var created Category
-	resp, err := c.client.Create(ctx, "categories", newCategory, &created)
+	resp, err := c.Client.Create(ctx, "categories", newCategory, &created)
 	return &created, resp, err
 }
 
@@ -51,7 +51,7 @@ func (c *CategoriesService) Create(ctx context.Context, newCategory *Category) (
 func (c *CategoriesService) Get(ctx context.Context, id int, params interface{}) (*Category, *Response, error) {
 	var entity Category
 	entityURL := fmt.Sprintf("categories/%v", id)
-	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	resp, err := c.Client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }
 
@@ -59,7 +59,7 @@ func (c *CategoriesService) Get(ctx context.Context, id int, params interface{})
 func (c *CategoriesService) Update(ctx context.Context, id int, post *Category) (*Category, *Response, error) {
 	var updated Category
 	entityURL := fmt.Sprintf("categories/%v", id)
-	resp, err := c.client.Update(ctx, entityURL, post, &updated)
+	resp, err := c.Client.Update(ctx, entityURL, post, &updated)
 	return &updated, resp, err
 }
 
@@ -67,6 +67,6 @@ func (c *CategoriesService) Update(ctx context.Context, id int, post *Category) 
 func (c *CategoriesService) Delete(ctx context.Context, id int, params interface{}) (*Category, *Response, error) {
 	var deleted Category
 	entityURL := fmt.Sprintf("categories/%v", id)
-	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
+	resp, err := c.Client.Delete(ctx, entityURL, params, &deleted)
 	return &deleted, resp, err
 }

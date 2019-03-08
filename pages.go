@@ -45,7 +45,7 @@ func (entity *Page) Revisions() *RevisionsService {
 		return nil
 	}
 	return &RevisionsService{
-		service:    service(*entity.collection),
+		Service:    Service(*entity.collection),
 		parent:     entity,
 		parentType: "pages",
 		url:        fmt.Sprintf("%v/%v/%v", "pages", entity.ID, "revisions"),
@@ -58,7 +58,7 @@ func (entity *Page) Populate(ctx context.Context, params interface{}) (*Page, *R
 }
 
 // PagesService provides access to the page related functions in the WordPress REST API.
-type PagesService service
+type PagesService Service
 
 // List returns a list of pages.
 func (c *PagesService) List(ctx context.Context, opts *PageListOptions) ([]*Page, *Response, error) {
@@ -67,13 +67,13 @@ func (c *PagesService) List(ctx context.Context, opts *PageListOptions) ([]*Page
 		return nil, nil, err
 	}
 
-	req, err := c.client.NewRequest("GET", u, nil)
+	req, err := c.Client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	pages := []*Page{}
-	resp, err := c.client.Do(ctx, req, &pages)
+	resp, err := c.Client.Do(ctx, req, &pages)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -89,7 +89,7 @@ func (c *PagesService) List(ctx context.Context, opts *PageListOptions) ([]*Page
 // Create creates a new page.
 func (c *PagesService) Create(ctx context.Context, newPage *Page) (*Page, *Response, error) {
 	var created Page
-	resp, err := c.client.Create(ctx, "pages", newPage, &created)
+	resp, err := c.Client.Create(ctx, "pages", newPage, &created)
 
 	created.setService(c)
 
@@ -100,7 +100,7 @@ func (c *PagesService) Create(ctx context.Context, newPage *Page) (*Page, *Respo
 func (c *PagesService) Get(ctx context.Context, id int, params interface{}) (*Page, *Response, error) {
 	var entity Page
 	entityURL := fmt.Sprintf("pages/%v", id)
-	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	resp, err := c.Client.Get(ctx, entityURL, params, &entity)
 
 	// set collection object for each entity which has sub-collection
 	entity.setService(c)
@@ -121,7 +121,7 @@ func (c *PagesService) Entity(id int) *Page {
 func (c *PagesService) Update(ctx context.Context, id int, page *Page) (*Page, *Response, error) {
 	var updated Page
 	entityURL := fmt.Sprintf("pages/%v", id)
-	resp, err := c.client.Update(ctx, entityURL, page, &updated)
+	resp, err := c.Client.Update(ctx, entityURL, page, &updated)
 
 	// set collection object for each entity which has sub-collection
 	updated.setService(c)
@@ -134,7 +134,7 @@ func (c *PagesService) Delete(ctx context.Context, id int, params interface{}) (
 	var deleted Page
 	entityURL := fmt.Sprintf("pages/%v", id)
 
-	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
+	resp, err := c.Client.Delete(ctx, entityURL, params, &deleted)
 
 	// set collection object for each entity which has sub-collection
 	deleted.setService(c)

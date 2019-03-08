@@ -85,7 +85,7 @@ func (entity *Post) Revisions() *RevisionsService {
 		return nil
 	}
 	return &RevisionsService{
-		service:    service(*entity.collection),
+		Service:    Service(*entity.collection),
 		parent:     entity,
 		parentType: "posts",
 		url:        fmt.Sprintf("%v/%v/%v", "posts", entity.ID, "revisions"),
@@ -100,7 +100,7 @@ func (entity *Post) Terms() *PostsTermsService {
 		return nil
 	}
 	return &PostsTermsService{
-		client:     entity.collection.client,
+		client:     entity.collection.Client,
 		parent:     entity,
 		parentType: "posts",
 		url:        fmt.Sprintf("%v/%v/%v", "posts", entity.ID, "terms"),
@@ -113,7 +113,7 @@ func (entity *Post) Populate(ctx context.Context, params interface{}) (*Post, *R
 }
 
 // PostsService provides access to the post related functions in the WordPress REST API.
-type PostsService service
+type PostsService Service
 
 // List returns a list of posts.
 func (c *PostsService) List(ctx context.Context, opts *PostListOptions) ([]*Post, *Response, error) {
@@ -122,13 +122,13 @@ func (c *PostsService) List(ctx context.Context, opts *PostListOptions) ([]*Post
 		return nil, nil, err
 	}
 
-	req, err := c.client.NewRequest("GET", u, nil)
+	req, err := c.Client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	posts := []*Post{}
-	resp, err := c.client.Do(ctx, req, &posts)
+	resp, err := c.Client.Do(ctx, req, &posts)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -144,7 +144,7 @@ func (c *PostsService) List(ctx context.Context, opts *PostListOptions) ([]*Post
 // Create creates a new post.
 func (c *PostsService) Create(ctx context.Context, newPost *Post) (*Post, *Response, error) {
 	var created Post
-	resp, err := c.client.Create(ctx, "posts", newPost, &created)
+	resp, err := c.Client.Create(ctx, "posts", newPost, &created)
 
 	created.setService(c)
 
@@ -155,7 +155,7 @@ func (c *PostsService) Create(ctx context.Context, newPost *Post) (*Post, *Respo
 func (c *PostsService) Get(ctx context.Context, id int, params interface{}) (*Post, *Response, error) {
 	var entity Post
 	entityURL := fmt.Sprintf("posts/%v", id)
-	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	resp, err := c.Client.Get(ctx, entityURL, params, &entity)
 
 	// set collection object for each entity which has sub-collection
 	entity.setService(c)
@@ -176,7 +176,7 @@ func (c *PostsService) Entity(id int) *Post {
 func (c *PostsService) Update(ctx context.Context, id int, post *Post) (*Post, *Response, error) {
 	var updated Post
 	entityURL := fmt.Sprintf("posts/%v", id)
-	resp, err := c.client.Update(ctx, entityURL, post, &updated)
+	resp, err := c.Client.Update(ctx, entityURL, post, &updated)
 
 	// set collection object for each entity which has sub-collection
 	updated.setService(c)
@@ -189,7 +189,7 @@ func (c *PostsService) Delete(ctx context.Context, id int, params interface{}) (
 	var deleted Post
 	entityURL := fmt.Sprintf("posts/%v", id)
 
-	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
+	resp, err := c.Client.Delete(ctx, entityURL, params, &deleted)
 
 	// set collection object for each entity which has sub-collection
 	deleted.setService(c)

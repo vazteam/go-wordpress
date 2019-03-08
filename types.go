@@ -40,12 +40,12 @@ type Types struct {
 }
 
 // TypesService provides access to the Type related functions in the WordPress REST API.
-type TypesService service
+type TypesService Service
 
 // List returns a list of types.
 func (c *TypesService) List(ctx context.Context, params interface{}) (*Types, *Response, error) {
 	var types Types
-	resp, err := c.client.List(ctx, "types", params, &types)
+	resp, err := c.Client.List(ctx, "types", params, &types)
 	return &types, resp, err
 }
 
@@ -53,6 +53,6 @@ func (c *TypesService) List(ctx context.Context, params interface{}) (*Types, *R
 func (c *TypesService) Get(ctx context.Context, slug string, params interface{}) (*Type, *Response, error) {
 	var entity Type
 	entityURL := fmt.Sprintf("types/%v", slug)
-	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	resp, err := c.Client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }

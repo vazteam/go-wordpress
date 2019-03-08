@@ -23,7 +23,7 @@ type Revision struct {
 
 // RevisionsService provides access to the revision related functions in the WordPress REST API.
 type RevisionsService struct {
-	service
+	Service
 	url        string
 	parent     interface{}
 	parentType string
@@ -32,7 +32,7 @@ type RevisionsService struct {
 // List returns a list of revisions.
 func (c *RevisionsService) List(ctx context.Context, params interface{}) ([]*Revision, *Response, error) {
 	var revisions []*Revision
-	resp, err := c.client.List(ctx, c.url, params, &revisions)
+	resp, err := c.Client.List(ctx, c.url, params, &revisions)
 	return revisions, resp, err
 }
 
@@ -40,7 +40,7 @@ func (c *RevisionsService) List(ctx context.Context, params interface{}) ([]*Rev
 func (c *RevisionsService) Get(ctx context.Context, id int, params interface{}) (*Revision, *Response, error) {
 	var revision Revision
 	entityURL := fmt.Sprintf("%v/%v", c.url, id)
-	resp, err := c.client.Get(ctx, entityURL, params, &revision)
+	resp, err := c.Client.Get(ctx, entityURL, params, &revision)
 	return &revision, resp, err
 }
 
@@ -48,6 +48,6 @@ func (c *RevisionsService) Get(ctx context.Context, id int, params interface{}) 
 func (c *RevisionsService) Delete(ctx context.Context, id int, params interface{}) (*Revision, *Response, error) {
 	var response Revision
 	entityURL := fmt.Sprintf("%v/%v", c.url, id)
-	resp, err := c.client.Delete(ctx, entityURL, "force=true", &response)
+	resp, err := c.Client.Delete(ctx, entityURL, "force=true", &response)
 	return &response, resp, err
 }

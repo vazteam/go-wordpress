@@ -17,12 +17,12 @@ type Taxonomy struct {
 }
 
 // TaxonomiesService provides access to the Taxonomies related functions in the WordPress REST API.
-type TaxonomiesService service
+type TaxonomiesService Service
 
 // List returns a list of taxonomies.
 func (c *TaxonomiesService) List(ctx context.Context, params interface{}) (map[string]Taxonomy, *Response, error) {
 	var taxonomies map[string]Taxonomy
-	resp, err := c.client.List(ctx, "taxonomies", params, &taxonomies)
+	resp, err := c.Client.List(ctx, "taxonomies", params, &taxonomies)
 	return taxonomies, resp, err
 }
 
@@ -30,6 +30,6 @@ func (c *TaxonomiesService) List(ctx context.Context, params interface{}) (map[s
 func (c *TaxonomiesService) Get(ctx context.Context, slug string, params interface{}) (*Taxonomy, *Response, error) {
 	var taxonomy Taxonomy
 	entityURL := fmt.Sprintf("taxonomies/%v", slug)
-	resp, err := c.client.Get(ctx, entityURL, params, &taxonomy)
+	resp, err := c.Client.Get(ctx, entityURL, params, &taxonomy)
 	return &taxonomy, resp, err
 }

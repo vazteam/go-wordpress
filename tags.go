@@ -17,7 +17,7 @@ type Tag struct {
 }
 
 // TagsService provides access to the Tag related functions in the WordPress REST API.
-type TagsService service
+type TagsService Service
 
 // List returns a list of tags.
 func (c *TagsService) List(ctx context.Context, opts *TagListOptions) ([]*Tag, *Response, error) {
@@ -26,13 +26,13 @@ func (c *TagsService) List(ctx context.Context, opts *TagListOptions) ([]*Tag, *
 		return nil, nil, err
 	}
 
-	req, err := c.client.NewRequest("GET", u, nil)
+	req, err := c.Client.NewRequest("GET", u, nil)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	tags := []*Tag{}
-	resp, err := c.client.Do(ctx, req, &tags)
+	resp, err := c.Client.Do(ctx, req, &tags)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -42,7 +42,7 @@ func (c *TagsService) List(ctx context.Context, opts *TagListOptions) ([]*Tag, *
 // Create creates a new tag.
 func (c *TagsService) Create(ctx context.Context, newTag *Tag) (*Tag, *Response, error) {
 	var created Tag
-	resp, err := c.client.Create(ctx, "tags", newTag, &created)
+	resp, err := c.Client.Create(ctx, "tags", newTag, &created)
 	return &created, resp, err
 }
 
@@ -50,7 +50,7 @@ func (c *TagsService) Create(ctx context.Context, newTag *Tag) (*Tag, *Response,
 func (c *TagsService) Get(ctx context.Context, id int, params interface{}) (*Tag, *Response, error) {
 	var entity Tag
 	entityURL := fmt.Sprintf("tags/%v", id)
-	resp, err := c.client.Get(ctx, entityURL, params, &entity)
+	resp, err := c.Client.Get(ctx, entityURL, params, &entity)
 	return &entity, resp, err
 }
 
@@ -58,7 +58,7 @@ func (c *TagsService) Get(ctx context.Context, id int, params interface{}) (*Tag
 func (c *TagsService) Update(ctx context.Context, id int, post *Tag) (*Tag, *Response, error) {
 	var updated Tag
 	entityURL := fmt.Sprintf("tags/%v", id)
-	resp, err := c.client.Update(ctx, entityURL, post, &updated)
+	resp, err := c.Client.Update(ctx, entityURL, post, &updated)
 	return &updated, resp, err
 }
 
@@ -66,6 +66,6 @@ func (c *TagsService) Update(ctx context.Context, id int, post *Tag) (*Tag, *Res
 func (c *TagsService) Delete(ctx context.Context, id int, params interface{}) (*Tag, *Response, error) {
 	var deleted Tag
 	entityURL := fmt.Sprintf("tags/%v", id)
-	resp, err := c.client.Delete(ctx, entityURL, params, &deleted)
+	resp, err := c.Client.Delete(ctx, entityURL, params, &deleted)
 	return &deleted, resp, err
 }
