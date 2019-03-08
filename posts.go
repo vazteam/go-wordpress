@@ -117,7 +117,7 @@ type PostsService service
 
 // List returns a list of posts.
 func (c *PostsService) List(ctx context.Context, opts *PostListOptions) ([]*Post, *Response, error) {
-	u, err := addOptions("posts", opts)
+	u, err := AddOptions("posts", opts)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -62,7 +62,7 @@ type PagesService service
 
 // List returns a list of pages.
 func (c *PagesService) List(ctx context.Context, opts *PageListOptions) ([]*Page, *Response, error) {
-	u, err := addOptions("pages", opts)
+	u, err := AddOptions("pages", opts)
 	if err != nil {
 		return nil, nil, err
 	}

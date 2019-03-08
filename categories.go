@@ -22,7 +22,7 @@ type CategoriesService service
 
 // List returns a list of categories.
 func (c *CategoriesService) List(ctx context.Context, opts *CategoryListOptions) ([]*Category, *Response, error) {
-	u, err := addOptions("categories", opts)
+	u, err := AddOptions("categories", opts)
 	if err != nil {
 		return nil, nil, err
 	}

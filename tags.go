@@ -21,7 +21,7 @@ type TagsService service
 
 // List returns a list of tags.
 func (c *TagsService) List(ctx context.Context, opts *TagListOptions) ([]*Tag, *Response, error) {
-	u, err := addOptions("tags", opts)
+	u, err := AddOptions("tags", opts)
 	if err != nil {
 		return nil, nil, err
 	}
