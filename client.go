@@ -242,6 +242,11 @@ func (c *Client) getRequestURL(s string) (*url.URL, error) {
 	return c.baseURL.Parse(apiPath)
 }
 
+// GetCommonService returns a reusable single instance of Service to allocate it to custom services.
+func (c *Client) GetCommonService() *Service {
+	return &c.common
+}
+
 // NewRequest creates an API request. A relative URL can be provided in urlStr,
 // in which case it is resolved relative to the baseURL of the Client.
 // Relative URLs should always be specified without a preceding slash. If
