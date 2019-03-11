@@ -65,6 +65,8 @@ type Client struct {
 	// WordPress timezone location
 	Location *time.Location
 
+	// set NonPrettyPermalinks to true if using non-pretty permalinks
+	// reference: https://developer.wordpress.org/rest-api/#routes-endpoints
 	NonPrettyPermalinks bool
 
 	Categories *CategoriesService
