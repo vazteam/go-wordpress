@@ -13,27 +13,42 @@ type Time struct {
 	time.Time
 }
 
-// TimeLayout is the layout string for a timestamp without timezone information like 2017-12-25T09:54:42
-const TimeLayout = "2006-01-02T15:04:05"
+const (
+	// TimeLayout is the layout string for a timestamp without timezone information like 2017-12-25T09:54:42
+	TimeLayout = "2006-01-02T15:04:05"
 
-// TimeWithZoneLayout is the layout string for a timestamp with timezone information like 2017-09-24T13:28:06+00:00.
-const TimeWithZoneLayout = "2006-01-02T15:04:05-07:00"
+	// TimeWithZoneLayout is the layout string for a timestamp with timezone information like 2017-09-24T13:28:06+00:00.
+	TimeWithZoneLayout = "2006-01-02T15:04:05-07:00"
+
+	// TimeWithZoneLayout is the layout string for a timestamp which is simple for human like 2017-12-25 09:54:42
+	SimpleTimeLayout = "2006-01-02 15:04:05"
+)
 
 // UnmarshalJSON unmarshals the timestamp with one of the WordPress specific formats.
 func (t *Time) UnmarshalJSON(b []byte) error {
 	if b[0] == '"' && b[len(b)-1] == '"' {
 		b = b[1 : len(b)-1]
 	}
-	zoneTime, err := time.Parse(TimeWithZoneLayout, string(b))
-	if err != nil {
-		noZoneTime, altErr := time.ParseInLocation(TimeLayout, string(b), Location)
-		if altErr != nil {
-			return err
-		}
-		zoneTime = noZoneTime
+
+	parsedTime, err := time.Parse(TimeWithZoneLayout, string(b))
+	if err == nil {
+		t.Time = parsedTime
+		return nil
 	}
-	t.Time = zoneTime
-	return nil
+
+	parsedTime, err = time.ParseInLocation(TimeLayout, string(b), Location)
+	if err == nil {
+		t.Time = parsedTime
+		return nil
+	}
+
+	parsedTime, err = time.ParseInLocation(SimpleTimeLayout, string(b), Location)
+	if err == nil {
+		t.Time = parsedTime
+		return nil
+	}
+
+	return fmt.Errorf("cannot parse \"%s\" as any of WordPress time layouts: \"%s\", \"%s\", \"%s\"", b, TimeWithZoneLayout, TimeLayout, SimpleTimeLayout)
 }
 
 // MarshalJSON returns a WordPress formatted timestamp.
