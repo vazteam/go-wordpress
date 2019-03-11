@@ -32,7 +32,7 @@ type CommentsService Service
 
 // List returns a list of comments.
 func (c *CommentsService) List(ctx context.Context, opts *CommentListOptions) ([]*Comment, *Response, error) {
-	u, err := AddOptions("comments", opts)
+	u, err := c.Client.AddOptions("comments", opts)
 	if err != nil {
 		return nil, nil, err
 	}

@@ -72,7 +72,7 @@ type MediaService Service
 
 // List returns a list of medias.
 func (c *MediaService) List(ctx context.Context, opts *MediaListOptions) ([]*Media, *Response, error) {
-	u, err := AddOptions("media", opts)
+	u, err := c.Client.AddOptions("media", opts)
 	if err != nil {
 		return nil, nil, err
 	}

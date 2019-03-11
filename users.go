@@ -48,7 +48,7 @@ func (c *UsersService) Me(ctx context.Context, params interface{}) (*User, *Resp
 
 // List returns a list of users.
 func (c *UsersService) List(ctx context.Context, opts *UserListOptions) ([]*User, *Response, error) {
-	u, err := AddOptions("users", opts)
+	u, err := c.Client.AddOptions("users", opts)
 	if err != nil {
 		return nil, nil, err
 	}

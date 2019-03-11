@@ -199,32 +199,6 @@ func NewClient(baseURLStr string, httpClient *http.Client) (*Client, error) {
 	return c, nil
 }
 
-// AddOptions adds the parameters in opt as URL query parameters to s. opt
-// must be a struct whose fields may contain "url" tags.
-func AddOptions(s string, opt interface{}) (string, error) {
-	v := reflect.ValueOf(opt)
-	if v.Kind() == reflect.Ptr && v.IsNil() {
-		return s, nil
-	}
-
-	if v.Kind() == reflect.String {
-		return fmt.Sprintf("%s?%s", s, opt.(string)), nil
-	}
-
-	u, err := url.Parse(s)
-	if err != nil {
-		return s, err
-	}
-
-	qs, err := query.Values(opt)
-	if err != nil {
-		return s, err
-	}
-
-	u.RawQuery = qs.Encode()
-	return u.String(), nil
-}
-
 func (c *Client) getRequestURL(s string) (*url.URL, error) {
 	var apiPath string
 	if c.NonPrettyPermalinks {
@@ -245,6 +219,34 @@ func (c *Client) getRequestURL(s string) (*url.URL, error) {
 // GetCommonService returns a reusable single instance of Service to allocate it to custom services.
 func (c *Client) GetCommonService() *Service {
 	return &c.common
+}
+
+// AddOptions adds the parameters in opt as URL query parameters to s. opt
+// must be a struct whose fields may contain "url" tags.
+func (c *Client) AddOptions(s string, opt interface{}) (string, error) {
+	var connector string
+	if c.NonPrettyPermalinks {
+		connector = "&"
+	} else {
+		connector = "?"
+	}
+
+	v := reflect.ValueOf(opt)
+
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return s, nil
+	}
+
+	if v.Kind() == reflect.String {
+		return fmt.Sprintf("%s%s%s", s, connector, opt.(string)), nil
+	}
+
+	qs, err := query.Values(opt)
+	if err != nil {
+		return s, err
+	}
+
+	return fmt.Sprintf("%s%s%s", s, connector, qs.Encode()), nil
 }
 
 // NewRequest creates an API request. A relative URL can be provided in urlStr,
@@ -382,7 +384,7 @@ func (c *Client) BasicInfo(ctx context.Context) (*RootInfo, *Response, error) {
 // List is a generic function that will return a list of items from the WordPress REST API.
 func (c *Client) List(ctx context.Context, url string, params interface{}, result interface{}) (*Response, error) {
 
-	u, err := AddOptions(url, params)
+	u, err := c.AddOptions(url, params)
 	if err != nil {
 		return nil, err
 	}
@@ -407,7 +409,7 @@ func (c *Client) Create(ctx context.Context, url string, content interface{}, re
 
 // Get returns a single item from the WordPress REST API for the given parameters.
 func (c *Client) Get(ctx context.Context, url string, params interface{}, result interface{}) (*Response, error) {
-	u, err := AddOptions(url, params)
+	u, err := c.AddOptions(url, params)
 	if err != nil {
 		return nil, err
 	}
@@ -434,7 +436,7 @@ func (c *Client) Update(ctx context.Context, url string, content interface{}, re
 
 // Delete will delete an item from the WordPress REST API.
 func (c *Client) Delete(ctx context.Context, url string, params interface{}, result interface{}) (*Response, error) {
-	u, err := AddOptions(url, params)
+	u, err := c.AddOptions(url, params)
 	if err != nil {
 		return nil, err
 	}
