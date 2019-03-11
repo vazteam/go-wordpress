@@ -232,8 +232,7 @@ func (c *Client) AddOptions(s string, opt interface{}) (string, error) {
 	}
 
 	v := reflect.ValueOf(opt)
-
-	if v.Kind() == reflect.Ptr && v.IsNil() {
+	if !v.IsValid() || (v.Kind() == reflect.Ptr && v.IsNil()) {
 		return s, nil
 	}
 
