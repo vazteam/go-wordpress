@@ -164,21 +164,25 @@ func (r *Response) populatePageValues() {
 }
 
 // NewClient returns an initalized Client for the given baseURL and httpClient.
-func NewClient(baseURL string, httpClient *http.Client) (*Client, error) {
-	if strings.Contains(baseURL, apiPathPrefix) {
+func NewClient(baseURLStr string, httpClient *http.Client) (*Client, error) {
+	if strings.Contains(baseURLStr, apiPathPrefix) {
 		return nil, ErrURLContainsWPV2
 	}
 
-	url, urlErr := url.Parse(baseURL)
-	if urlErr != nil {
-		return nil, urlErr
+	baseURL, err := url.Parse(baseURLStr)
+	if err != nil {
+		return nil, err
+	}
+
+	if !strings.HasSuffix(baseURL.Path, "/") {
+		baseURL.Path += "/"
 	}
 
 	if httpClient == nil {
 		httpClient = DefaultHTTPClient
 	}
 
-	c := &Client{client: httpClient, UserAgent: userAgent, baseURL: url}
+	c := &Client{client: httpClient, UserAgent: userAgent, baseURL: baseURL}
 	c.common.Client = c
 	c.Categories = (*CategoriesService)(&c.common)
 	c.Comments = (*CommentsService)(&c.common)
@@ -222,10 +226,6 @@ func AddOptions(s string, opt interface{}) (string, error) {
 }
 
 func (c *Client) getRequestURL(s string) (*url.URL, error) {
-	if !strings.HasSuffix(c.baseURL.Path, "/") {
-		return nil, fmt.Errorf("baseURL must have a trailing slash, but %q does not", c.baseURL)
-	}
-
 	var apiPath string
 	if c.NonPrettyPermalinks {
 		apiPath = "/?rest_route="
