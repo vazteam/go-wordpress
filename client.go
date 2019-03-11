@@ -69,6 +69,9 @@ type Client struct {
 	// reference: https://developer.wordpress.org/rest-api/#routes-endpoints
 	NonPrettyPermalinks bool
 
+	// if ProcessRawResponseBody is set to true, response from WordPress will be decoded into RawBody filed of response struct
+	ProcessRawResponseBody bool
+
 	Categories *CategoriesService
 	Comments   *CommentsService
 	Media      *MediaService
@@ -111,6 +114,9 @@ type ListOptions struct {
 // pagination data.
 type Response struct {
 	*http.Response
+
+	// This value is only used when ProcessRawResponseBody flag of client is turned on
+	RawBody interface{}
 
 	// These fields provide the page values for paginating through a set of
 	// results. Any or all of these may be set to the zero value for
@@ -339,9 +345,23 @@ func (c *Client) Do(ctx context.Context, req *http.Request, v interface{}) (*Res
 				err = copyErr
 			}
 		} else {
-			err = json.NewDecoder(resp.Body).Decode(v)
-			if err == io.EOF {
-				err = nil // ignore EOF errors caused by empty response body
+			body, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return response, err
+			}
+
+			err = json.Unmarshal(body, v)
+
+			// if ProcessRawResponseBody is turned on, decode body of WordPress response and assign to this function's response
+			if c.ProcessRawResponseBody {
+				additionalError := json.Unmarshal(body, &response.RawBody)
+				if additionalError != nil {
+					if err == nil {
+						err = additionalError
+					} else {
+						err = fmt.Errorf("%s\n%s", err, additionalError)
+					}
+				}
 			}
 		}
 	}
