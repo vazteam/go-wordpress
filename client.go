@@ -125,6 +125,7 @@ type Response struct {
 
 	TotalRecords int
 	TotalPages   int
+	CurrentPage  int
 	PreviousPage int
 	NextPage     int
 }
@@ -148,24 +149,25 @@ func newResponse(r *http.Response) *Response {
 func (r *Response) populatePageValues() {
 	totalRecordsHeader := r.Header.Get(headerTotalRecords)
 	totalRecords, _ := strconv.Atoi(totalRecordsHeader)
-
 	r.TotalRecords = totalRecords
 
 	totalPagesHeader := r.Header.Get(headerTotalPages)
 	totalPages, _ := strconv.Atoi(totalPagesHeader)
-
 	r.TotalPages = totalPages
 
-	lastPage, _ := strconv.Atoi(r.Request.URL.Query().Get("page"))
-
-	if totalRecordsHeader != "" && totalPagesHeader != "" && lastPage == 0 {
-		lastPage = 1
+	currentPage, _ := strconv.Atoi(r.Request.URL.Query().Get("page"))
+	if totalRecordsHeader != "" && totalPagesHeader != "" && currentPage == 0 {
+		currentPage = 1
 	}
 
-	r.PreviousPage = lastPage
+	r.CurrentPage = currentPage
 
-	r.NextPage = lastPage + 1
+	r.PreviousPage = currentPage - 1
+	if r.PreviousPage < 0 {
+		r.PreviousPage = 0
+	}
 
+	r.NextPage = currentPage + 1
 	if r.NextPage > r.TotalPages {
 		r.NextPage = 0
 	}
