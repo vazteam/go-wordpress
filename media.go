@@ -49,7 +49,7 @@ type Media struct {
 	GUID         RenderedString `json:"guid,omitempty"`
 	Link         string         `json:"link,omitempty"`
 	Modified     Time           `json:"modified,omitempty"`
-	ModifiedGMT  Time           `json:"modifiedGMT,omitempty"`
+	ModifiedGMT  Time           `json:"modified_gmt,omitempty"`
 	Password     string         `json:"password,omitempty"`
 	Slug         string         `json:"slug,omitempty"`
 	Status       string         `json:"status,omitempty"`
