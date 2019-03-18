@@ -5,8 +5,13 @@ import (
 	"time"
 )
 
-// Location is the time.Location used when decoding timestamps from WordPress.
-var Location = time.UTC
+// defaultLocation is the time.Location used when decoding timestamps from WordPress.
+var defaultLocation = time.UTC
+
+// SetDefaultLocation configure default location
+func SetDefaultLocation(loc *time.Location) {
+	defaultLocation = loc
+}
 
 // Time is a wrapper around time.Time with custom JSON marshal/unmarshal functions for the WordPress specific timestamp formats.
 type Time struct {
@@ -36,13 +41,15 @@ func (t *Time) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	parsedTime, err = time.ParseInLocation(TimeLayout, string(b), Location)
+	location := defaultLocation
+
+	parsedTime, err = time.ParseInLocation(TimeLayout, string(b), location)
 	if err == nil {
 		t.Time = parsedTime
 		return nil
 	}
 
-	parsedTime, err = time.ParseInLocation(SimpleTimeLayout, string(b), Location)
+	parsedTime, err = time.ParseInLocation(SimpleTimeLayout, string(b), location)
 	if err == nil {
 		t.Time = parsedTime
 		return nil

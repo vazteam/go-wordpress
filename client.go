@@ -179,6 +179,8 @@ func NewClient(baseURLStr string, httpClient *http.Client) (*Client, error) {
 		return nil, ErrURLContainsWPV2
 	}
 
+	location := defaultLocation
+
 	baseURL, err := url.Parse(baseURLStr)
 	if err != nil {
 		return nil, err
@@ -192,7 +194,12 @@ func NewClient(baseURLStr string, httpClient *http.Client) (*Client, error) {
 		httpClient = DefaultHTTPClient
 	}
 
-	c := &Client{client: httpClient, UserAgent: userAgent, baseURL: baseURL}
+	c := &Client{
+		client:    httpClient,
+		UserAgent: userAgent,
+		Location:  location,
+		baseURL:   baseURL,
+	}
 	c.common.Client = c
 	c.Categories = (*CategoriesService)(&c.common)
 	c.Comments = (*CommentsService)(&c.common)
