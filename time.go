@@ -2,6 +2,7 @@ package wordpress
 
 import (
 	"fmt"
+	"net/url"
 	"time"
 )
 
@@ -64,6 +65,18 @@ func marshalTimeJSON(t *time.Time) ([]byte, error) {
 	return []byte(fmt.Sprintf(`"%s"`, t.Format(TimeLayout))), nil
 }
 
+func encodeValues(t *time.Time, key string, uv *url.Values, loc *time.Location) error {
+	uv.Add(key, t.In(loc).Format(TimeLayout))
+	return nil
+}
+
+// NewTime returns a WordPress Time
+func NewTime(t *time.Time) *Time {
+	return &Time{
+		Time: *t,
+	}
+}
+
 // UnmarshalJSON unmarshals the timestamp with one of the WordPress specific formats.
 func (t *Time) UnmarshalJSON(b []byte) error {
 	return unmarshalTimeJSON(&t.Time, b, defaultLocation)
@@ -72,6 +85,11 @@ func (t *Time) UnmarshalJSON(b []byte) error {
 // MarshalJSON returns a WordPress formatted timestamp.
 func (t *Time) MarshalJSON() ([]byte, error) {
 	return marshalTimeJSON(&t.Time)
+}
+
+// EncodeValues encodes a value and add it to url query
+func (t *Time) EncodeValues(key string, uv *url.Values) error {
+	return encodeValues(&t.Time, key, uv, defaultLocation)
 }
 
 // UnmarshalJSON unmarshals the timestamp with one of the WordPress specific formats.
