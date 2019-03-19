@@ -45,11 +45,11 @@ type MediaUploadOptions struct {
 type Media struct {
 	ID           int            `json:"id,omitempty"`
 	Date         Time           `json:"date,omitempty"`
-	DateGMT      Time           `json:"date_gmt,omitempty"`
+	DateGMT      TimeGMT        `json:"date_gmt,omitempty"`
 	GUID         RenderedString `json:"guid,omitempty"`
 	Link         string         `json:"link,omitempty"`
 	Modified     Time           `json:"modified,omitempty"`
-	ModifiedGMT  Time           `json:"modified_gmt,omitempty"`
+	ModifiedGMT  TimeGMT        `json:"modified_gmt,omitempty"`
 	Password     string         `json:"password,omitempty"`
 	Slug         string         `json:"slug,omitempty"`
 	Status       string         `json:"status,omitempty"`

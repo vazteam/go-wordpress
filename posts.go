@@ -52,7 +52,7 @@ type Post struct {
 	CommentStatus string         `json:"comment_status,omitempty"`
 	Content       RenderedString `json:"content,omitempty"`
 	Date          Time           `json:"date,omitempty"`
-	DateGMT       Time           `json:"date_gmt,omitempty"`
+	DateGMT       TimeGMT        `json:"date_gmt,omitempty"`
 	Excerpt       RenderedString `json:"excerpt,omitempty"`
 	FeaturedMedia int            `json:"featured_media,omitempty"`
 	Format        string         `json:"format,omitempty"`
@@ -60,7 +60,7 @@ type Post struct {
 	ID            int            `json:"id,omitempty"`
 	Link          string         `json:"link,omitempty"`
 	Modified      Time           `json:"modified,omitempty"`
-	ModifiedGMT   Time           `json:"modified_gmt,omitempty"`
+	ModifiedGMT   TimeGMT        `json:"modified_gmt,omitempty"`
 	Password      string         `json:"password,omitempty"`
 	PingStatus    string         `json:"ping_status,omitempty"`
 	Slug          string         `json:"slug,omitempty"`

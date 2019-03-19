@@ -18,6 +18,11 @@ type Time struct {
 	time.Time
 }
 
+// TimeGMT is a same kind of time.Time wrapper with Time, but is considered as a time in GMT.
+type TimeGMT struct {
+	time.Time
+}
+
 const (
 	// TimeLayout is the layout string for a timestamp without timezone information like 2017-12-25T09:54:42
 	TimeLayout = "2006-01-02T15:04:05"
@@ -29,36 +34,52 @@ const (
 	SimpleTimeLayout = "2006-01-02 15:04:05"
 )
 
-// UnmarshalJSON unmarshals the timestamp with one of the WordPress specific formats.
-func (t *Time) UnmarshalJSON(b []byte) error {
+func unmarshalTimeJSON(t *time.Time, b []byte, loc *time.Location) error {
 	if b[0] == '"' && b[len(b)-1] == '"' {
 		b = b[1 : len(b)-1]
 	}
 
 	parsedTime, err := time.Parse(TimeWithZoneLayout, string(b))
 	if err == nil {
-		t.Time = parsedTime
+		*t = parsedTime.In(loc)
 		return nil
 	}
 
-	location := defaultLocation
-
-	parsedTime, err = time.ParseInLocation(TimeLayout, string(b), location)
+	parsedTime, err = time.ParseInLocation(TimeLayout, string(b), loc)
 	if err == nil {
-		t.Time = parsedTime
+		*t = parsedTime
 		return nil
 	}
 
-	parsedTime, err = time.ParseInLocation(SimpleTimeLayout, string(b), location)
+	parsedTime, err = time.ParseInLocation(SimpleTimeLayout, string(b), loc)
 	if err == nil {
-		t.Time = parsedTime
+		*t = parsedTime
 		return nil
 	}
 
 	return fmt.Errorf("cannot parse \"%s\" as any of WordPress time layouts: \"%s\", \"%s\", \"%s\"", b, TimeWithZoneLayout, TimeLayout, SimpleTimeLayout)
 }
 
+func marshalTimeJSON(t *time.Time) ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%s"`, t.Format(TimeLayout))), nil
+}
+
+// UnmarshalJSON unmarshals the timestamp with one of the WordPress specific formats.
+func (t *Time) UnmarshalJSON(b []byte) error {
+	return unmarshalTimeJSON(&t.Time, b, defaultLocation)
+}
+
 // MarshalJSON returns a WordPress formatted timestamp.
 func (t *Time) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`"%s"`, t.Time.Format(TimeLayout))), nil
+	return marshalTimeJSON(&t.Time)
+}
+
+// UnmarshalJSON unmarshals the timestamp with one of the WordPress specific formats.
+func (t *TimeGMT) UnmarshalJSON(b []byte) error {
+	return unmarshalTimeJSON(&t.Time, b, time.UTC)
+}
+
+// MarshalJSON returns a WordPress formatted timestamp.
+func (t *TimeGMT) MarshalJSON() ([]byte, error) {
+	return marshalTimeJSON(&t.Time)
 }

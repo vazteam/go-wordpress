@@ -10,10 +10,10 @@ type Revision struct {
 	ID          int            `json:"id,omitempty"`
 	Author      int            `json:"author,omitempty"`
 	Date        Time           `json:"date,omitempty"`
-	DateGMT     Time           `json:"date_gmt,omitempty"`
+	DateGMT     TimeGMT        `json:"date_gmt,omitempty"`
 	GUID        RenderedString `json:"guid,omitempty"`
 	Modified    Time           `json:"modified,omitempty"`
-	ModifiedGMT Time           `json:"modified_gmt,omitempty"`
+	ModifiedGMT TimeGMT        `json:"modified_gmt,omitempty"`
 	Parent      int            `json:"parent,omitempty"`
 	Slug        string         `json:"slug,omitempty"`
 	Title       RenderedString `json:"title,omitempty"`
